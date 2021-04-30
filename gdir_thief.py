@@ -1,4 +1,5 @@
 import os.path
+import time
 import csv
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -38,10 +39,12 @@ def get_dir(service):
         results = service.people().listDirectoryPeople(
             sources='DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE',
             readMask='names,emailAddresses,organizations',
+            pageSize=1000,
             pageToken=page_token).execute()
 
         try:
             directory = results.get('people', [])
+            time.sleep(1)
         except Exception as e:
             print('[*] An Error occured fetching the directory: %s' % str(e))
             sys.exit(2)
