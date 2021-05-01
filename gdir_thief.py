@@ -31,14 +31,14 @@ def build_service():
     return service
 
 def get_dir(service):
-    print('[*] Fetching the Orgnaization\'s Google People Directory')
+    print('[*] Fetching the Organization\'s Google People Directory')
     file = open('./loot/directory.csv', 'w')
     page_token = None
 
     while True:
         results = service.people().listDirectoryPeople(
             sources='DIRECTORY_SOURCE_TYPE_DOMAIN_PROFILE',
-            readMask='names,emailAddresses,organizations',
+            readMask='emailAddresses,organizations',
             pageSize=1000,
             pageToken=page_token).execute()
 
@@ -70,24 +70,39 @@ def get_dir(service):
                 lastname = ""
                 email = ""
                 orgname = ""
-                orgtitle = ""
+                jobtitle = ""
 
-                names = person.get('names', [])
                 emails = person.get('emailAddresses', [])
                 orgs = person.get('organizations', [])
-                if names:
-                    firstname = names[0].get('givenName')
-                    firstname = firstname.replace(",", "-")
-                    lastname = names[0].get('familyName')
-                    lastname = lastname.replace(",", "-")
+
+
                 if emails:
                     email = emails[0].get('value')
+
+                fullname = email.split('@', 1)[0]
+                if '.' in fullname:
+                    firstname, lastname = fullname.strip().split('.', 1)
+
+
+                firstname = firstname.replace(",", "-")
+                firstname = firstname.capitalize()
+
+                lastname = lastname.replace(",", "-")
+                lastname = lastname.capitalize()
+
                 if orgs:
                     orgname = str(orgs[0].get('name'))
                     orgname = orgname.replace(",", "-")
-                    orgtitle = str(orgs[0].get('title'))
-                    orgtitle = orgtitle.replace(",", "-")
-                file.write(firstname + "," + lastname + "," + email + "," + orgname + "," + orgtitle + "\n")
+
+                    if orgname == 'None':
+                        orgname = ''
+
+                    jobtitle = str(orgs[0].get('title'))
+                    jobtitle = jobtitle.replace(",", "-")
+                    if jobtitle == 'None':
+                        jobtitle = ''
+
+                file.write(firstname + "," + lastname + "," + email + "," + jobtitle + "," + orgname + "\n")
     file.close()
 
 
