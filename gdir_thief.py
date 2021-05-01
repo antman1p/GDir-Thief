@@ -122,7 +122,7 @@ def main():
     usage = '\nusage: python3 gdir_thief.py [-h]\n'
     #help
     help = '\nThis Module will connect to Google\'s People API using an access token and '
-    help += 'exfiltrate the organization\'s People directory\nIt will output a CSV '
+    help += 'exfiltrate the organization\'s\nPeople directory.  It will output a CSV '
     help += 'file to ./loot/directory.csv\n'
 
     try :

@@ -76,6 +76,6 @@ python3 gdir_thief.py [-h]
 
 help:
 
-This Module will connect to Google's People API using an access token and exfiltrate the organization's People directory
-It will output a CSV file to ./loot/directory.csv
+This Module will connect to Google's People API using an access token and exfiltrate the organization's
+People directory.  It will output a CSV file to ./loot/directory.csv
 ```
