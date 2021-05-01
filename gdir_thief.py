@@ -6,7 +6,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/directory.readonly']
 
 ### Builds the G-Drive API service
@@ -30,9 +29,10 @@ def build_service():
     service = build('people', 'v1', credentials=creds)
     return service
 
+
 def get_dir(service):
+    full_directory = []
     print('[*] Fetching the Organization\'s Google People Directory')
-    file = open('./loot/directory.csv', 'w')
     page_token = None
 
     while True:
@@ -57,58 +57,68 @@ def get_dir(service):
         if page_token is None:
             break
 
-        ### DEBUG:
-        #print('[*] count: %s' % count)
-        #time.sleep(.25)
-        #count += 1
 
         if not directory:
-            print('No directory found.')
+            print('[*] No directory found.')
+            exit(2)
         else:
-            for person in directory:
-                firstname = ""
-                lastname = ""
-                email = ""
-                orgname = ""
-                jobtitle = ""
-
-                emails = person.get('emailAddresses', [])
-                orgs = person.get('organizations', [])
+            full_directory.append(directory)
 
 
-                if emails:
-                    email = emails[0].get('value')
+    return full_directory
 
-                fullname = email.split('@', 1)[0]
-                if '.' in fullname:
-                    firstname, lastname = fullname.strip().split('.', 1)
+def print_csv(full_directory):
+    print('[*] Writing Directory to CSV')
+    file = open('./loot/directory.csv', 'w')
+    file.write("First Name, Last Name, Email, Position, Orgnanization\n")
+    for directory in full_directory:
+        for person in directory:
+            firstname = ""
+            lastname = ""
+            email = ""
+            orgname = ""
+            jobtitle = ""
+
+            emails = person.get('emailAddresses', [])
+            orgs = person.get('organizations', [])
 
 
-                firstname = firstname.replace(",", "-")
-                firstname = firstname.capitalize()
+            if emails:
+                email = emails[0].get('value')
 
-                lastname = lastname.replace(",", "-")
-                lastname = lastname.capitalize()
+            fullname = email.split('@', 1)[0]
+            if '.' in fullname:
+                firstname, lastname = fullname.strip().split('.', 1)
 
-                if orgs:
-                    orgname = str(orgs[0].get('name'))
-                    orgname = orgname.replace(",", "-")
 
-                    if orgname == 'None':
-                        orgname = ''
+            firstname = firstname.replace(",", "-")
+            firstname = firstname.capitalize()
 
-                    jobtitle = str(orgs[0].get('title'))
-                    jobtitle = jobtitle.replace(",", "-")
-                    if jobtitle == 'None':
-                        jobtitle = ''
+            lastname = lastname.replace(",", "-")
+            lastname = lastname.capitalize()
 
-                file.write(firstname + "," + lastname + "," + email + "," + jobtitle + "," + orgname + "\n")
+            if orgs:
+                orgname = str(orgs[0].get('name'))
+                orgname = orgname.replace(",", "-")
+
+                if orgname == 'None':
+                    orgname = ''
+
+                jobtitle = str(orgs[0].get('title'))
+                jobtitle = jobtitle.replace(",", "-")
+                if jobtitle == 'None':
+                    jobtitle = ''
+
+            file.write(firstname + "," + lastname + "," + email + "," +
+                jobtitle + "," + orgname + "\n")
+                
     file.close()
 
 
 def main():
     service = build_service()
     directory = get_dir(service)
+    print_csv(directory)
     print('[*] Directory stealing complete')
 
 if __name__ == '__main__':
