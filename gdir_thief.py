@@ -1,4 +1,6 @@
 import os.path
+import getopt
+import sys
 import time
 import csv
 from googleapiclient.discovery import build
@@ -116,6 +118,25 @@ def print_csv(full_directory):
 
 
 def main():
+    # usage
+    usage = '\nusage: python3 gdir_thief.py [-h]\n'
+    #help
+    help = '\nThis Module will connect to Google\'s People API using an access token and '
+    help += 'exfiltrate the organization\'s People directory\nIt will output a CSV '
+    help += 'file to ./loot/directory.csv\n'
+
+    try :
+        opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
+    except getopt.GetoptError as err:
+        print(str(err))
+        print(usage)
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print(help)
+            sys.exit()
+
     service = build_service()
     directory = get_dir(service)
     print_csv(directory)
