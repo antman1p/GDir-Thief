@@ -32,7 +32,7 @@ def build_service():
 
 def get_dir(service):
     full_directory = []
-    print('[*] Fetching the Organization\'s Google People Directory')
+    print('[*] Fetching the Organization\'s Google People Directory.  This could take a while...')
     page_token = None
 
     while True:
@@ -111,7 +111,7 @@ def print_csv(full_directory):
 
             file.write(firstname + "," + lastname + "," + email + "," +
                 jobtitle + "," + orgname + "\n")
-                
+
     file.close()
 
 
