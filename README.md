@@ -1,3 +1,4 @@
+<a href="https://twitter.com/antman1p"><img src="https://img.shields.io/twitter/follow/antman1p.svg?logo=twitter"></a>
 # GDir-Thief
 Red Team tool for exfiltrating the target organization's Google People Directory that you have access to, via Google's People API.
 ## HOW TO
